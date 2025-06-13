@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class ResponsiveHeaderRow extends StatelessWidget {
   final String id;
+  final int? pointsFlex;
   final String name;
   final String email;
   final String joinDate;
@@ -41,6 +42,7 @@ class ResponsiveHeaderRow extends StatelessWidget {
     this.textColor,
     this.hadingColor,
     this.status,
+    this.pointsFlex,
   });
 
   @override
@@ -73,19 +75,18 @@ class ResponsiveHeaderRow extends StatelessWidget {
       },
     );
   }
-
   List<Widget> _buildHeaderRow(double fontSize, Color textClr) {
-    return [
+    List<Widget> rowWidgets = [
       _responsiveBox(
         flex: 1,
-        child: HeaderText(text: id, fontSize: fontSize, color: textClr , ),
-      ),
-      _responsiveBox(
-        flex: 2,
-        child: HeaderText(text: name, fontSize: fontSize, color: textClr),
+        child: HeaderText(text: id, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
         flex: 3,
+        child: HeaderText(text: name, fontSize: fontSize, color: textClr),
+      ),
+      _responsiveBox(
+        flex: 5,
         child: HeaderText(text: email, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
@@ -93,39 +94,48 @@ class ResponsiveHeaderRow extends StatelessWidget {
         child: HeaderText(text: joinDate, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
-        flex: 2,
+        flex: 1,
         child: HeaderText(text: bookings, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
-        flex: 2,
+        flex: 1,
         child: HeaderText(text: status ?? '', fontSize: fontSize, color: textClr),
       ),
-      _responsiveBox(
-        flex: 3,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            HeaderText(text: points ?? '', fontSize: fontSize, color: textClr),
-            if (pointsIcons != null && pointsIcons!.isNotEmpty)
-              ...List.generate(pointsIcons!.length, (index) {
-                final iconColor = (pointsIconColors != null && pointsIconColors!.length > index)
-                    ? pointsIconColors![index]
-                    : Colors.grey;
-                return IconButton(
-                  icon: Icon(pointsIcons![index], size: 18, color: iconColor),
-                  onPressed: onPointsIconPressed != null && onPointsIconPressed!.length > index
-                      ? onPointsIconPressed![index]
-                      : null,
-                  tooltip: 'Point Icon ${index + 1}',
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  constraints: const BoxConstraints(),
-                );
-              }),
-          ],
+    ];
+
+    if (points != null || (pointsIcons != null && pointsIcons!.isNotEmpty)) {
+      rowWidgets.add(
+        _responsiveBox(
+          flex: pointsFlex ?? 1,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (points != null)
+                HeaderText(text: points!, fontSize: fontSize, color: textClr),
+              if (pointsIcons != null && pointsIcons!.isNotEmpty)
+                ...List.generate(pointsIcons!.length, (index) {
+                  final iconColor = (pointsIconColors != null && pointsIconColors!.length > index)
+                      ? pointsIconColors![index]
+                      : Colors.grey;
+                  return IconButton(
+                    icon: Icon(pointsIcons![index], size: 18, color: iconColor),
+                    onPressed: onPointsIconPressed != null && onPointsIconPressed!.length > index
+                        ? onPointsIconPressed![index]
+                        : null,
+                    tooltip: 'Point Icon ${index + 1}',
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    constraints: const BoxConstraints(),
+                  );
+                }),
+            ],
+          ),
         ),
-      ),
+      );
+    }
+
+    rowWidgets.add(
       _responsiveBox(
-        flex: 3,
+        flex: 1,
         child: Row(
           children: [
             HeaderText(text: actions, fontSize: fontSize, color: textClr),
@@ -150,7 +160,9 @@ class ResponsiveHeaderRow extends StatelessWidget {
           ],
         ),
       ),
-    ];
+    );
+
+    return rowWidgets;
   }
 
   Widget _responsiveBox({required int flex, required Widget child}) {
