@@ -5,7 +5,16 @@
 *.swp
 .DS_Store
 .atom/
+
+# Ignore everything in .build/
 .build/
+
+# But do not ignore .build/web/
+!.build/web/
+
+# Also make sure parent directories are not ignored
+!.build
+
 .buildlog/
 .history
 .svn/
