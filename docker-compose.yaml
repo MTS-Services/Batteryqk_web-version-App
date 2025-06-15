@@ -7,5 +7,5 @@ services:
       dockerfile: Dockerfile
     container_name: batteryqk_web
     ports:
-      - "8081:80"  # host:container
+      - "80:80"  # host:container
     restart: always
