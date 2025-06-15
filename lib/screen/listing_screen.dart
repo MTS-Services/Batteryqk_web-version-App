@@ -1,5 +1,6 @@
 import 'package:batteryqk_web/core/app_colors.dart';
 import 'package:batteryqk_web/screen/widget/add_category.dart';
+import 'package:batteryqk_web/screen/widget/background_widget.dart';
 import 'package:batteryqk_web/screen/widget/choose_file.dart';
 import 'package:batteryqk_web/screen/widget/custom_header_text.dart';
 import 'package:batteryqk_web/screen/widget/dilog_utils.dart';
@@ -24,6 +25,7 @@ class _ListingScreenState extends State<ListingScreen> {
   final TextEditingController sportCategoryController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController facilityController = TextEditingController();
+  final TextEditingController ageGroupController = TextEditingController();
 
   final List<Map<String, dynamic>> headerData = [
     {'key': 'id', 'label': 'ID'},
@@ -49,11 +51,11 @@ class _ListingScreenState extends State<ListingScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final rowFontSize = getFontSize(screenWidth);
-    return Scaffold(
-      body: Padding(
+
+    return BackgroundWidget(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          spacing: 15,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LayoutBuilder(
@@ -74,34 +76,35 @@ class _ListingScreenState extends State<ListingScreen> {
                     ElevatedButton.icon(
                       icon: const Icon(Icons.add),
                       label: const Text('New Listing'),
-                      onPressed:
-                          () => chooseFileBox(
-                            context,
-                            mainController: mainController,
-                            subController1: subController1,
-                            subController2: subController2,
-                            subController3: subController3,
-                            subController4: subController4,
-                            nameController: nameController,
-                            locationController:locationController,
-                            priceController: priceController,
-                            descriptionController: sportCategoryController,
-                            facilityController: facilityController,
-                          ),
+                      onPressed: () => chooseFileBox(
+                        context,
+                        mainController: mainController,
+                        subController1: subController1,
+                        subController2: subController2,
+                        subController3: subController3,
+                        subController4: subController4,
+                        nameController: nameController,
+                        locationController: locationController,
+                        priceController: priceController,
+                        descriptionController: sportCategoryController,
+                        facilityController: facilityController,
+                        ageGroupController: ageGroupController,
+                      ),
                     ),
                   ],
                 );
                 return isMobile
                     ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [heading, const SizedBox(height: 10), buttons],
-                    )
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [heading, const SizedBox(height: 10), buttons],
+                )
                     : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [heading, buttons],
-                    );
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [heading, buttons],
+                );
               },
             ),
+            const SizedBox(height: 20),
             ResponsiveHeaderRow(
               hadingColor: AppColors.tabColor,
               id: headerData[0]['label'],
@@ -117,31 +120,69 @@ class _ListingScreenState extends State<ListingScreen> {
               ),
               fontSize: 18,
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  final isLast = index == 9;
-                  return ResponsiveHeaderRow(
-                    hadingColor: Colors.white,
-                    id: '00${index + 1}',
-                    name: 'Swimming',
-                    email: 'Elite Swimming Academy',
-                    joinDate: 'New York',
-                    bookings: 'All Ages',
-                    pointsIcons: List.generate(4, (_) => Icons.star),
-                    onPointsIconPressed: List.generate(
-                      4,
-                      (_) => () => print('Star icon pressed'),
+            const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                final isLast = index == 9;
+                return ResponsiveHeaderRow(
+                  hadingColor:Colors.white.withAlpha(230),
+                  id: '00${index + 1}',
+                  name: 'Swimming',
+                  email: 'Elite Swimming Academy',
+                  joinDate: 'New York',
+                  bookings: 'All Ages',
+                  pointsIcons: List.generate(4, (_) => Icons.star),
+                  onPointsIconPressed: List.generate(
+                    4,
+                        (_) => () => print('Star icon pressed'),
+                  ),
+                  actions: '',
+                  actionIcons: [
+                    Icons.visibility,
+                    Icons.edit_calendar_outlined,
+                    Icons.delete,
+                  ],
+                  onActionIconPressed: [
+                        () => showCustomFormDialog(
+                      context: context,
+                      title: 'Delete',
+                      fields: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          child: Text(
+                            "Are you sure you want to delete this item?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ),
+                      ],
+                      confirmText: "Delete",
+                      cancelText: "Cancel",
+                      onConfirm: () {},
                     ),
-                    actions: '',
-                    actionIcons: [
-                      Icons.visibility,
-                      Icons.edit_calendar_outlined,
-                      Icons.delete,
-                    ],
-                    onActionIconPressed: [
-                      () => showCustomFormDialog(
+                        () => chooseFileBox(
+                      context,
+                      mainController: mainController,
+                      subController1: subController1,
+                      subController2: subController2,
+                      subController3: subController3,
+                      subController4: subController4,
+                      nameController: nameController,
+                      locationController: locationController,
+                      priceController: priceController,
+                      descriptionController: sportCategoryController,
+                      facilityController: facilityController,
+                      ageGroupController: ageGroupController,
+                    ),
+                        () {
+                      showCustomFormDialog(
                         context: context,
                         title: 'Delete',
                         fields: [
@@ -161,61 +202,24 @@ class _ListingScreenState extends State<ListingScreen> {
                         confirmText: "Delete",
                         cancelText: "Cancel",
                         onConfirm: () {},
-                      ),
-                      () => chooseFileBox(
-                        context,
-                        mainController: mainController,
-                        subController1: subController1,
-                        subController2: subController2,
-                        subController3: subController3,
-                        subController4: subController4,
-                        nameController: nameController,
-                        locationController:locationController,
-                        priceController: priceController,
-                        descriptionController: sportCategoryController,
-                        facilityController: facilityController,
-                      ),
-                      () {
-                        showCustomFormDialog(
-                          context: context,
-                          title: 'Delete',
-                          fields: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12.0),
-                              child: Text(
-                                "Are you sure you want to delete this item?",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.redAccent,
-                                ),
-                              ),
-                            ),
-                          ],
-                          confirmText: "Delete",
-                          cancelText: "Cancel",
-                          onConfirm: () {},
-                        );
-                      },
-                    ],
-                    points: '',
-                    fontSize: rowFontSize,
-                    actionIconColors: [
-                      Colors.blueAccent,
-                      Colors.yellow,
-                      Colors.red,
-                    ],
-                    radius:
-                        isLast
-                            ? const BorderRadius.only(
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                            )
-                            : BorderRadius.zero,
-                  );
-                },
-              ),
+                      );
+                    },
+                  ],
+                  points: '',
+                  fontSize: rowFontSize,
+                  actionIconColors: [
+                    Colors.blueAccent,
+                    Colors.yellow,
+                    Colors.red,
+                  ],
+                  radius: isLast
+                      ? const BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  )
+                      : BorderRadius.zero,
+                );
+              },
             ),
           ],
         ),
@@ -236,5 +240,6 @@ class _ListingScreenState extends State<ListingScreen> {
     locationController.dispose();
     priceController.dispose();
     facilityController.dispose();
+    ageGroupController.dispose();
   }
 }

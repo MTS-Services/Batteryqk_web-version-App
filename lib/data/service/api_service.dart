@@ -17,10 +17,10 @@ class ApiService {
         body: jsonEncode(userLogin.toJson()),
       );
 
-      print("Request URL: $url");
-      print("Request Body: ${jsonEncode(userLogin.toJson())}");
-      print("Response statusCode: ${response.statusCode}");
-      print("Response Body: ${response.body}");
+      // print("Request URL: $url");
+      // print("Request Body: ${jsonEncode(userLogin.toJson())}");
+      // print("Response statusCode: ${response.statusCode}");
+      // print("Response Body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
 
@@ -31,18 +31,18 @@ class ApiService {
         final saveToken = await SharedPreferences.getInstance();
         saveToken.setString("token", token);
 
-        print("Token ======> $token");
+        // print("Token ======> $token");
 
         showSnackbar("Success", "Login successful");
         Get.toNamed('/Responsive');
       } else {
         showSnackbar("Failed", "Login failed: ${response.statusCode}");
-        print("Unexpected status code: ${response.statusCode}");
+        // print("Unexpected status code: ${response.statusCode}");
       }
     } catch (e, stackTrace) {
       showSnackbar("Error", "An error occurred: $e");
-      print("Exception occurred: $e");
-      print("Stack Trace: $stackTrace");
+      // print("Exception occurred: $e");
+      // print("Stack Trace: $stackTrace");
     }
   }
 }

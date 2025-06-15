@@ -27,10 +27,10 @@ class UserService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      print("Response Data: $data");
+      // print("Response Data: $data");
       return data.map((e) => UserModel.fromJson(e)).toList();
     } else {
-      print(" Error Response: ${response.body}");
+      // print(" Error Response: ${response.body}");
       throw Exception("Status Code: ${response.statusCode}");
     }
   }
@@ -43,7 +43,7 @@ class UserService {
 
     final url = "${Urls.userDelete}/$id";
 
-    print("DELETE URL: $url");
+    // print("DELETE URL: $url");
 
     final response = await http.delete(
       Uri.parse(url),
@@ -53,8 +53,8 @@ class UserService {
       },
     );
 
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+    // print("Status Code: ${response.statusCode}");
+    // print("Response Body: ${response.body}");
 
     return response.statusCode == 200 || response.statusCode == 204;
   }
@@ -65,7 +65,7 @@ class UserService {
    if(token == null) throw Exception("No auth token");
    final url = "${Urls.userUpdate}/$id";
    
-   print("Update Url : $url");
+   // print("Update Url : $url");
    
    final response = await http.put(
      Uri.parse(url),
@@ -75,8 +75,8 @@ class UserService {
      },
      body: jsonEncode(updateModel.toJson())
    );
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+    // print("Status Code: ${response.statusCode}");
+    // print("Response Body: ${response.body}");
 
     return response.statusCode == 200 || response.statusCode == 201;
  }

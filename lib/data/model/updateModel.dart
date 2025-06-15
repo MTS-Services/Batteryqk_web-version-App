@@ -1,12 +1,12 @@
 class UpdateModel {
   final String fname;
   final String lname;
-  final String email;
+
 
   UpdateModel({
     required this.fname,
     required this.lname,
-    required this.email,
+
 
   });
 
@@ -14,7 +14,7 @@ class UpdateModel {
     return UpdateModel(
       fname: json['fname'],
       lname: json['lname'],
-      email: json['email'],
+
     );
   }
 
@@ -22,7 +22,6 @@ class UpdateModel {
     return {
       'fname': fname,
       'lname': lname,
-      'email': email,
     };
   }
 }

@@ -1,11 +1,12 @@
 import 'dart:ui';
+import 'package:batteryqk_web/screen/widget/background_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../data/model/logi_in_model.dart';
-import '../data/service/auth_controller.dart';
+import '../data/service/api_service.dart';
 import '../screen/widget/button_animation.dart';
 import '../screen/widget/gradient_border_painter.dart';
-import 'admin/responsive.dart';
+
 
 
 class SignInScreen extends StatefulWidget {
@@ -44,9 +45,8 @@ class _SignInScreenState extends State<SignInScreen>
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Center(
+    return BackgroundWidget(
+      child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: AnimatedBuilder(
@@ -62,10 +62,10 @@ class _SignInScreenState extends State<SignInScreen>
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withAlpha(230),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withAlpha(26),
                           blurRadius: 20,
                           spreadRadius: 3,
                           offset: const Offset(0, 10),

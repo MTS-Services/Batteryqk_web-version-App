@@ -22,7 +22,6 @@ class _UserScreenState extends State<UserScreen> {
 
   final TextEditingController _fnameTEController = TextEditingController();
   final TextEditingController _lnameTEController = TextEditingController();
-  final TextEditingController _emailTEController = TextEditingController();
 
   final List<Map<String, dynamic>> headerData = [
     {'key': 'id', 'label': 'ID'},
@@ -47,7 +46,6 @@ class _UserScreenState extends State<UserScreen> {
   void dispose() {
     _fnameTEController.dispose();
     _lnameTEController.dispose();
-    _emailTEController.dispose();
     super.dispose();
   }
 
@@ -67,8 +65,10 @@ class _UserScreenState extends State<UserScreen> {
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 10,
         children: [
           const CustomHeadingText(text: 'User Management'),
+          SizedBox(height: 10,),
           ResponsiveHeaderRow(
             pointsFlex: 0,
             hadingColor: AppColors.tabColor,
@@ -105,7 +105,7 @@ class _UserScreenState extends State<UserScreen> {
                         () {
                       _fnameTEController.text = user.fname;
                       _lnameTEController.text = user.lname;
-                      _emailTEController.text = user.email;
+
 
                       showCustomFormDialog(
                         context: context,
@@ -113,7 +113,7 @@ class _UserScreenState extends State<UserScreen> {
                         fields: [
                           _buildField("First Name", _fnameTEController),
                           _buildField("Last Name", _lnameTEController),
-                          _buildField("Email", _emailTEController),
+
                         ],
                         confirmText: "Edit",
                         cancelText: "Cancel",
@@ -191,14 +191,14 @@ class _UserScreenState extends State<UserScreen> {
   void userUpdate(int id) async {
     final fname = _fnameTEController.text.trim();
     final lname = _lnameTEController.text.trim();
-    final email = _emailTEController.text.trim();
 
-    if (email.isEmpty || fname.isEmpty || lname.isEmpty) {
+
+    if ( fname.isEmpty || lname.isEmpty) {
       showSnackbar("Error", "Please fill all fields.");
       return;
     }
 
-    final userUpdated = UpdateModel(fname: fname, lname: lname, email: email);
+    final userUpdated = UpdateModel(fname: fname, lname: lname,);
     final isUpdate = await UserService.userUpdate(id, userUpdated);
 
     if (isUpdate) {
