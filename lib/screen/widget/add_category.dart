@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controller/category_controller.dart';
-import '../../data/model/sum_category_model.dart';
+import '../../controller/item_controller.dart';
+import '../../data/model/sub_category_model.dart';
 import 'custom_dropdown_button.dart';
 import 'dilog_utils.dart';
 
@@ -12,11 +13,17 @@ final Map<String, TextEditingController> controllers = {
   'main': TextEditingController(),
   'sub': TextEditingController(),
   'sports': TextEditingController(),
+  'dropdown': TextEditingController(text: 'All Statuses'),
 };
 
-void openAddCategoryDialog(BuildContext context) {
-  String selectedStatus = 'All Statuses';
+void openAddCategoryDialog(BuildContext context) async {
   final createCategory = Get.put(CategoryController());
+  final ItemController controller = Get.put(ItemController());
+
+  await controller.fetchItems();
+
+  List<String> subOptions = [];
+  List<String> sportOptions = [];
 
   showCustomFormDialog(
     context: context,
@@ -26,48 +33,74 @@ void openAddCategoryDialog(BuildContext context) {
     fields: [
       StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
+          final selectedMain = controllers['dropdown']!.text;
+
+          subOptions = selectedMain != 'All Statuses'
+              ? controller.itemList
+              .where((item) => item.mainCategory.name == selectedMain)
+              .expand((item) => item.subCategories.map((e) => e.name))
+              .toList()
+              : [];
+
+          sportOptions = selectedMain != 'All Statuses'
+              ? controller.itemList
+              .where((item) => item.mainCategory.name == selectedMain)
+              .expand((item) => item.subCategories)
+              .expand((sub) => sub.specificItems.map((e) => e.name))
+              .toList()
+              : [];
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               StatusDropdown(
                 dropdownBgColor: Colors.white,
                 focusedBorderColor: Colors.white,
-                value: selectedStatus,
+                value: selectedMain,
                 onChanged: (val) {
                   if (val != null) {
-                    setState(() => selectedStatus = val);
+                    setState(() {
+                      controllers['dropdown']!.text = val;
+                      controllers['main']!.clear();
+                    });
                   }
                 },
                 statusList: [
                   'All Statuses',
-                  'Confirmed',
-                  'Pending',
-                  'Canceled',
+                  ...controller.itemList.map((item) => item.mainCategory.name)
                 ],
-                hintText: 'Choose status',
-                labelText: 'Filter by Status',
+                labelText: 'Select Main Category',
                 borderRadius: 10,
                 fontSize: 15,
               ),
               const SizedBox(height: 10),
-              _buildField(
-                'Main Category',
-                controllers['main']!,
-                enabled: selectedStatus == 'All Statuses',
-              ),
+              if (selectedMain == 'All Statuses')
+                _buildField('Main Category', controllers['main']!),
               _buildField('Sub Category', controllers['sub']!),
               _buildField('Sports (comma-separated)', controllers['sports']!),
+              if (subOptions.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text("Existing Sub Categories: ${subOptions.join(", ")}"),
+                ),
+              if (sportOptions.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text("Existing Sports: ${sportOptions.join(", ")}"),
+                ),
             ],
           );
         },
       ),
     ],
     onConfirm: () async {
-      final main = controllers['main']!.text.trim();
+      final main = controllers['dropdown']!.text == 'All Statuses'
+          ? controllers['main']!.text.trim()
+          : controllers['dropdown']!.text;
+
       final sub = controllers['sub']!.text.trim();
       final sportsRaw = controllers['sports']!.text.trim();
 
-      // Validate all fields
       if (main.isEmpty || sub.isEmpty || sportsRaw.isEmpty) {
         showSnackbar('Error', 'All fields are required');
         return;
@@ -84,7 +117,6 @@ void openAddCategoryDialog(BuildContext context) {
         specificItems: sportsList,
       );
 
-
       final CategoryCreateModel newCategory = CategoryCreateModel(
         mainCategory: main,
         subCategories: [subCategory],
@@ -93,16 +125,13 @@ void openAddCategoryDialog(BuildContext context) {
       final bool success = await createCategory.createCategory(newCategory);
       if (success) {
         controllers.forEach((_, c) => c.clear());
+        controllers['dropdown']!.text = 'All Statuses';
       }
     },
   );
 }
 
-Widget _buildField(
-    String label,
-    TextEditingController controller, {
-      bool enabled = true,
-    }) {
+Widget _buildField(String label, TextEditingController controller, {bool enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 10),
     child: TextFormField(

@@ -1,4 +1,4 @@
-import 'package:batteryqk_web/data/model/sum_category_model.dart';
+import 'package:batteryqk_web/data/model/sub_category_model.dart';
 
 class CategoryCreateModel {
   final String mainCategory;

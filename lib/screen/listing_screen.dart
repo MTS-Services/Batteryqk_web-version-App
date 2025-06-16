@@ -6,6 +6,9 @@ import 'package:batteryqk_web/screen/widget/custom_header_text.dart';
 import 'package:batteryqk_web/screen/widget/dilog_utils.dart';
 import 'package:batteryqk_web/screen/widget/responsive_header_row.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controller/item_controller.dart';
 
 class ListingScreen extends StatefulWidget {
   const ListingScreen({super.key});
@@ -14,6 +17,7 @@ class ListingScreen extends StatefulWidget {
   State<ListingScreen> createState() => _ListingScreenState();
 }
 
+final ItemController controller = Get.put(ItemController());
 class _ListingScreenState extends State<ListingScreen> {
   final TextEditingController mainController = TextEditingController();
   final TextEditingController subController1 = TextEditingController();
@@ -68,29 +72,36 @@ class _ListingScreenState extends State<ListingScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    ElevatedButton.icon(
+                    Obx(() =>
+                    controller.isLoading.value ? Center(
+                      child: CircularProgressIndicator(),) : ElevatedButton
+                        .icon(
                       onPressed: () => openAddCategoryDialog(context),
                       icon: const Icon(Icons.add),
                       label: const Text('Add Categories'),
-                    ),
-                    ElevatedButton.icon(
+                    ),),
+                    Obx(() =>
+                    controller.isLoading.value ? Center(
+                      child: CircularProgressIndicator(),) : ElevatedButton
+                        .icon(
                       icon: const Icon(Icons.add),
                       label: const Text('New Listing'),
-                      onPressed: () => chooseFileBox(
-                        context,
-                        mainController: mainController,
-                        subController1: subController1,
-                        subController2: subController2,
-                        subController3: subController3,
-                        subController4: subController4,
-                        nameController: nameController,
-                        locationController: locationController,
-                        priceController: priceController,
-                        descriptionController: sportCategoryController,
-                        facilityController: facilityController,
-                        ageGroupController: ageGroupController,
-                      ),
-                    ),
+                      onPressed: () =>
+                          chooseFileBox(
+                            context,
+                            mainController: mainController,
+                            subController1: subController1,
+                            subController2: subController2,
+                            subController3: subController3,
+                            subController4: subController4,
+                            nameController: nameController,
+                            locationController: locationController,
+                            priceController: priceController,
+                            descriptionController: sportCategoryController,
+                            facilityController: facilityController,
+                            ageGroupController: ageGroupController,
+                          ),
+                    ),)
                   ],
                 );
                 return isMobile
@@ -167,7 +178,9 @@ class _ListingScreenState extends State<ListingScreen> {
                       cancelText: "Cancel",
                       onConfirm: () {},
                     ),
-                        () => chooseFileBox(
+                        () =>
+                    controller.isLoading.value ? Center(
+                      child: CircularProgressIndicator(),) : chooseFileBox(
                       context,
                       mainController: mainController,
                       subController1: subController1,

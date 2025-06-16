@@ -8,7 +8,7 @@ import 'package:batteryqk_web/screen/widget/show_Snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../data/service/get_all_user_service.dart';
+import '../data/service/user_service.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
