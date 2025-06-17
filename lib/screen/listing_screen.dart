@@ -37,17 +37,13 @@ class _ListingScreenState extends State<ListingScreen> {
 
   final List<Map<String, dynamic>> headerData = [
     {'key': 'id', 'label': 'ID'},
-    {'key': 'name', 'label': 'Name'},
-    {'key': 'price', 'label': 'Price'},
-    {'key': 'category', 'label': 'Category'},
-    {'key': 'location', 'label': 'Location'},
-    {'key': 'agegroup', 'label': 'Age Group'},
-    {'key': 'facilities', 'label': 'Facilities'},
-    {'key': 'operatingHours', 'label': 'Operating Hours'},
-    {'key': 'rating', 'label': 'Rating'},
+    {'key': 'Name', 'label': 'Name'},
+    {'key': 'Category', 'label': 'Age Group'},
+    {'key': 'Location', 'label': 'Location'},
+    {'key': 'Age Group', 'label': 'Facilities'},
+    {'key': 'Rating', 'label': 'Opening hours'},
     {'key': 'actions', 'label': 'Actions', 'icons': [Icons.edit, Icons.delete, Icons.visibility]},
   ];
-
 
   double getFontSize(double width, {bool isHeader = false}) {
     if (width < 600) return isHeader ? 18 : 14;
