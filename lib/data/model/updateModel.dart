@@ -2,19 +2,15 @@ class UpdateModel {
   final String fname;
   final String lname;
 
-
   UpdateModel({
     required this.fname,
     required this.lname,
-
-
   });
 
   factory UpdateModel.fromJson(Map<String, dynamic> json) {
     return UpdateModel(
       fname: json['fname'],
       lname: json['lname'],
-
     );
   }
 
@@ -23,5 +19,10 @@ class UpdateModel {
       'fname': fname,
       'lname': lname,
     };
+  }
+
+  @override
+  String toString() {
+    return 'UpdateModel{fname: $fname, lname: $lname}';
   }
 }

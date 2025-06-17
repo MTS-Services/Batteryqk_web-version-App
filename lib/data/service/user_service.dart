@@ -27,10 +27,10 @@ class UserService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      // print("Response Data: $data");
+
       return data.map((e) => UserModel.fromJson(e)).toList();
     } else {
-      // print(" Error Response: ${response.body}");
+
       throw Exception("Status Code: ${response.statusCode}");
     }
   }
@@ -64,9 +64,9 @@ class UserService {
     final String? token = saveToken.getString('token');
    if(token == null) throw Exception("No auth token");
    final url = "${Urls.userUpdate}/$id";
-   
+
    // print("Update Url : $url");
-   
+
    final response = await http.put(
      Uri.parse(url),
      headers: {

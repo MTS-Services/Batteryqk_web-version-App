@@ -1,3 +1,4 @@
+import 'package:batteryqk_web/controller/listing_controller.dart';
 import 'package:batteryqk_web/core/app_colors.dart';
 import 'package:batteryqk_web/screen/widget/add_category.dart';
 import 'package:batteryqk_web/screen/widget/background_widget.dart';
@@ -8,6 +9,7 @@ import 'package:batteryqk_web/screen/widget/responsive_header_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../controller/getListingController.dart';
 import '../controller/item_controller.dart';
 
 class ListingScreen extends StatefulWidget {
@@ -18,6 +20,8 @@ class ListingScreen extends StatefulWidget {
 }
 
 final ItemController controller = Get.put(ItemController());
+final GetListingController listingController = Get.put(GetListingController());
+
 class _ListingScreenState extends State<ListingScreen> {
   final TextEditingController mainController = TextEditingController();
   final TextEditingController subController1 = TextEditingController();
@@ -33,17 +37,17 @@ class _ListingScreenState extends State<ListingScreen> {
 
   final List<Map<String, dynamic>> headerData = [
     {'key': 'id', 'label': 'ID'},
-    {'key': 'User', 'label': 'User'},
-    {'key': 'Category', 'label': 'Category'},
-    {'key': 'Location', 'label': 'Location'},
-    {'key': 'Age Group', 'label': 'Age Group'},
-    {'key': 'Rating', 'label': 'Rating'},
-    {
-      'key': 'actions',
-      'label': 'Actions',
-      'icons': [Icons.edit, Icons.delete, Icons.visibility],
-    },
+    {'key': 'name', 'label': 'Name'},
+    {'key': 'price', 'label': 'Price'},
+    {'key': 'category', 'label': 'Category'},
+    {'key': 'location', 'label': 'Location'},
+    {'key': 'agegroup', 'label': 'Age Group'},
+    {'key': 'facilities', 'label': 'Facilities'},
+    {'key': 'operatingHours', 'label': 'Operating Hours'},
+    {'key': 'rating', 'label': 'Rating'},
+    {'key': 'actions', 'label': 'Actions', 'icons': [Icons.edit, Icons.delete, Icons.visibility]},
   ];
+
 
   double getFontSize(double width, {bool isHeader = false}) {
     if (width < 600) return isHeader ? 18 : 14;
@@ -55,6 +59,8 @@ class _ListingScreenState extends State<ListingScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final rowFontSize = getFontSize(screenWidth);
+    final data = listingController.itemList;
+    print("data=====> $data");
 
     return BackgroundWidget(
       child: SingleChildScrollView(
@@ -64,55 +70,44 @@ class _ListingScreenState extends State<ListingScreen> {
           children: [
             LayoutBuilder(
               builder: (context, constraints) {
-                final heading = const CustomHeadingText(
-                  text: 'Listings Management',
-                );
+                final heading = const CustomHeadingText(text: 'Listings Management');
                 final isMobile = constraints.maxWidth < 600;
                 final buttons = Wrap(
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    Obx(() =>
-                    controller.isLoading.value ? Center(
-                      child: CircularProgressIndicator(),) : ElevatedButton
-                        .icon(
+                    Obx(() => controller.isLoading.value
+                        ? Center(child: CircularProgressIndicator())
+                        : ElevatedButton.icon(
                       onPressed: () => openAddCategoryDialog(context),
                       icon: const Icon(Icons.add),
                       label: const Text('Add Categories'),
-                    ),),
-                    Obx(() =>
-                    controller.isLoading.value ? Center(
-                      child: CircularProgressIndicator(),) : ElevatedButton
-                        .icon(
+                    )),
+                    Obx(() => controller.isLoading.value
+                        ? Center(child: CircularProgressIndicator())
+                        : ElevatedButton.icon(
                       icon: const Icon(Icons.add),
                       label: const Text('New Listing'),
-                      onPressed: () =>
-                          chooseFileBox(
-                            context,
-                            mainController: mainController,
-                            subController1: subController1,
-                            subController2: subController2,
-                            subController3: subController3,
-                            subController4: subController4,
-                            nameController: nameController,
-                            locationController: locationController,
-                            priceController: priceController,
-                            descriptionController: sportCategoryController,
-                            facilityController: facilityController,
-                            ageGroupController: ageGroupController,
-                          ),
-                    ),)
+                      onPressed: () => chooseFileBox(
+                        context,
+                        mainController: mainController,
+                        subController1: subController1,
+                        subController2: subController2,
+                        subController3: subController3,
+                        subController4: subController4,
+                        nameController: nameController,
+                        locationController: locationController,
+                        priceController: priceController,
+                        descriptionController: sportCategoryController,
+                        facilityController: facilityController,
+                        ageGroupController: ageGroupController,
+                      ),
+                    )),
                   ],
                 );
                 return isMobile
-                    ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [heading, const SizedBox(height: 10), buttons],
-                )
-                    : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [heading, buttons],
-                );
+                    ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [heading, const SizedBox(height: 10), buttons])
+                    : Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [heading, buttons]);
               },
             ),
             const SizedBox(height: 20),
@@ -125,37 +120,33 @@ class _ListingScreenState extends State<ListingScreen> {
               bookings: headerData[4]['label'],
               points: headerData[5]['label'],
               actions: headerData[6]['label'],
-              radius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
+              radius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
               fontSize: 18,
             ),
             const SizedBox(height: 10),
-            ListView.builder(
+            Obx(() =>listingController.isLoading.value?Center(child: CircularProgressIndicator(),):ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10,
+              itemCount: data.length,
               itemBuilder: (context, index) {
+
+                final listing = data[index];
+                print(listing.selectedMainCategories);
                 final isLast = index == 9;
                 return ResponsiveHeaderRow(
-                  hadingColor:Colors.white.withAlpha(230),
-                  id: '00${index + 1}',
-                  name: 'Swimming',
-                  email: 'Elite Swimming Academy',
-                  joinDate: 'New York',
-                  bookings: 'All Ages',
-                  pointsIcons: List.generate(4, (_) => Icons.star),
-                  onPointsIconPressed: List.generate(
-                    4,
-                        (_) => () => print('Star icon pressed'),
-                  ),
+                  hadingColor: Colors.white.withAlpha(230),
+                  id: listing.id.toString(),
+                  name: listing.name,
+                  email: (listing.selectedMainCategories.isNotEmpty &&
+                      index < listing.selectedMainCategories.length)
+                      ? listing.selectedMainCategories[index].name ?? 'No Name'
+                      : 'No Categories',
+                  joinDate: listing.location.first,
+                  bookings: listing.agegroup.first,
+                  pointsIcons: [],
+                  onPointsIconPressed: List.generate(4, (_) => () => print('Star icon pressed')),
                   actions: '',
-                  actionIcons: [
-                    Icons.visibility,
-                    Icons.edit_calendar_outlined,
-                    Icons.delete,
-                  ],
+                  actionIcons: [Icons.visibility, Icons.edit_calendar_outlined, Icons.delete],
                   onActionIconPressed: [
                         () => showCustomFormDialog(
                       context: context,
@@ -176,11 +167,13 @@ class _ListingScreenState extends State<ListingScreen> {
                       ],
                       confirmText: "Delete",
                       cancelText: "Cancel",
-                      onConfirm: () {},
+                      onConfirm: () {
+                        // Handle delete action
+                      },
                     ),
-                        () =>
-                    controller.isLoading.value ? Center(
-                      child: CircularProgressIndicator(),) : chooseFileBox(
+                        () => controller.isLoading.value
+                        ? Center(child: CircularProgressIndicator())
+                        : chooseFileBox(
                       context,
                       mainController: mainController,
                       subController1: subController1,
@@ -194,46 +187,39 @@ class _ListingScreenState extends State<ListingScreen> {
                       facilityController: facilityController,
                       ageGroupController: ageGroupController,
                     ),
-                        () {
-                      showCustomFormDialog(
-                        context: context,
-                        title: 'Delete',
-                        fields: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
-                            child: Text(
-                              "Are you sure you want to delete this item?",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.redAccent,
-                              ),
+                        () => showCustomFormDialog(
+                      context: context,
+                      title: 'Delete',
+                      fields: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          child: Text(
+                            "Are you sure you want to delete this item?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.redAccent,
                             ),
                           ),
-                        ],
-                        confirmText: "Delete",
-                        cancelText: "Cancel",
-                        onConfirm: () {},
-                      );
-                    },
+                        ),
+                      ],
+                      confirmText: "Delete",
+                      cancelText: "Cancel",
+                      onConfirm: () {
+                        // Handle delete action
+                      },
+                    ),
                   ],
                   points: '',
                   fontSize: rowFontSize,
-                  actionIconColors: [
-                    Colors.blueAccent,
-                    Colors.yellow,
-                    Colors.red,
-                  ],
+                  actionIconColors: [Colors.blueAccent, Colors.yellow, Colors.red],
                   radius: isLast
-                      ? const BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  )
+                      ? const BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10))
                       : BorderRadius.zero,
                 );
               },
-            ),
+            )),
           ],
         ),
       ),

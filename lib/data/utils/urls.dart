@@ -6,4 +6,6 @@ class Urls{
   static const String userUpdate = "$_baseUrl/users/update";
   static const String categoryCreate = "$_baseUrl/categories";
   static const String getItem= "$_baseUrl/categories";
+  static const String listingCreate= "$_baseUrl/listings";
+  static const String getListing= "$_baseUrl/listings";
 }

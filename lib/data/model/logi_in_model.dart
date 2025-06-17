@@ -10,4 +10,9 @@ class UserLogin {
       'password': password,
     };
   }
+
+  @override
+  String toString() {
+    return 'UserLogin{email: $email, password: $password}';
+  }
 }

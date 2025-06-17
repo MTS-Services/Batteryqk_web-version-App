@@ -24,4 +24,9 @@ class CategoryCreateModel {
       'subCategories': subCategories.map((e) => e.toJson()).toList(),
     };
   }
+
+  @override
+  String toString() {
+    return 'CategoryCreateModel{mainCategory: $mainCategory, subCategories: $subCategories}';
+  }
 }

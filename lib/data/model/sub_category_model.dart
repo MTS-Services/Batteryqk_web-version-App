@@ -20,4 +20,9 @@ class SubCategory {
       'specificItems': specificItems,
     };
   }
+
+  @override
+  String toString() {
+    return 'SubCategory{name: $name, specificItems: $specificItems}';
+  }
 }
