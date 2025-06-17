@@ -1,4 +1,5 @@
 import 'package:batteryqk_web/screen/widget/table_header_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiveHeaderRow extends StatelessWidget {
@@ -9,11 +10,11 @@ class ResponsiveHeaderRow extends StatelessWidget {
   final String joinDate;
   final String bookings;
   final String? points;
-  final List<IconData>? pointsIcons;
+  final List<dynamic>? pointsIcons;
   final List<VoidCallback>? onPointsIconPressed;
   final List<Color>? pointsIconColors;
   final String actions;
-  final List<IconData>? actionIcons;
+  final List<dynamic>? actionIcons;
   final List<VoidCallback>? onActionIconPressed;
   final List<Color>? actionIconColors;
   final BorderRadius? radius;
@@ -75,6 +76,7 @@ class ResponsiveHeaderRow extends StatelessWidget {
       },
     );
   }
+
   List<Widget> _buildHeaderRow(double fontSize, Color textClr) {
     List<Widget> rowWidgets = [
       _responsiveBox(
@@ -82,11 +84,11 @@ class ResponsiveHeaderRow extends StatelessWidget {
         child: HeaderText(text: id, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
-        flex: 3,
+        flex: 2,
         child: HeaderText(text: name, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
-        flex: 5,
+        flex: 2,
         child: HeaderText(text: email, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
@@ -94,7 +96,7 @@ class ResponsiveHeaderRow extends StatelessWidget {
         child: HeaderText(text: joinDate, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
-        flex: 1,
+        flex: 2,
         child: HeaderText(text: bookings, fontSize: fontSize, color: textClr),
       ),
       _responsiveBox(
@@ -106,7 +108,7 @@ class ResponsiveHeaderRow extends StatelessWidget {
     if (points != null || (pointsIcons != null && pointsIcons!.isNotEmpty)) {
       rowWidgets.add(
         _responsiveBox(
-          flex: pointsFlex ?? 1,
+          flex: pointsFlex ?? 2,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -117,15 +119,35 @@ class ResponsiveHeaderRow extends StatelessWidget {
                   final iconColor = (pointsIconColors != null && pointsIconColors!.length > index)
                       ? pointsIconColors![index]
                       : Colors.grey;
-                  return IconButton(
-                    icon: Icon(pointsIcons![index], size: 18, color: iconColor),
-                    onPressed: onPointsIconPressed != null && onPointsIconPressed!.length > index
-                        ? onPointsIconPressed![index]
-                        : null,
-                    tooltip: 'Point Icon ${index + 1}',
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    constraints: const BoxConstraints(),
-                  );
+
+                  final icon = pointsIcons![index];
+                  if (icon is IconData) {
+                    return IconButton(
+                      icon: Icon(icon, size: 18, color: iconColor),
+                      onPressed: onPointsIconPressed != null && onPointsIconPressed!.length > index
+                          ? onPointsIconPressed![index]
+                          : null,
+                      tooltip: 'Point Icon ${index + 1}',
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      constraints: const BoxConstraints(),
+                    );
+                  } else if (icon is String) {
+                    // Handle string-to-icon conversion (if using strings as icons)
+                    IconData? convertedIcon = _getIconFromString(icon);
+                    return convertedIcon != null
+                        ? IconButton(
+                      icon: Icon(convertedIcon, size: 18, color: iconColor),
+                      onPressed: onPointsIconPressed != null && onPointsIconPressed!.length > index
+                          ? onPointsIconPressed![index]
+                          : null,
+                      tooltip: 'Point Icon ${index + 1}',
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      constraints: const BoxConstraints(),
+                    )
+                        : Text(icon, style: TextStyle(fontSize: fontSize, color: iconColor));
+                  } else {
+                    return Container();
+                  }
                 }),
             ],
           ),
@@ -144,18 +166,29 @@ class ResponsiveHeaderRow extends StatelessWidget {
                 final iconColor = (actionIconColors != null && actionIconColors!.length > index)
                     ? actionIconColors![index]
                     : Colors.grey;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: IconButton(
-                    icon: Icon(actionIcons![index], size: 18, color: iconColor),
-                    onPressed: onActionIconPressed != null && onActionIconPressed!.length > index
-                        ? onActionIconPressed![index]
-                        : null,
-                    tooltip: 'Action ${index + 1}',
-                    padding: const EdgeInsets.all(0),
-                    constraints: const BoxConstraints(),
-                  ),
-                );
+
+                final icon = actionIcons![index];
+                if (icon is IconData) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: IconButton(
+                      icon: Icon(icon, size: 18, color: iconColor),
+                      onPressed: onActionIconPressed != null && onActionIconPressed!.length > index
+                          ? onActionIconPressed![index]
+                          : null,
+                      tooltip: 'Action ${index + 1}',
+                      padding: const EdgeInsets.all(0),
+                      constraints: const BoxConstraints(),
+                    ),
+                  );
+                } else if (icon is String) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Text(icon, style: TextStyle(fontSize: fontSize, color: iconColor)),
+                  );
+                } else {
+                  return Container();
+                }
               }),
           ],
         ),
@@ -173,5 +206,20 @@ class ResponsiveHeaderRow extends StatelessWidget {
         child: child,
       ),
     );
+  }
+
+  // Helper function to convert string to IconData
+  IconData? _getIconFromString(String iconName) {
+    switch (iconName) {
+      case 'home':
+        return Icons.home;
+      case 'settings':
+        return Icons.settings;
+      case 'favorite':
+        return Icons.favorite;
+    // Add more mappings here
+      default:
+        return null;
+    }
   }
 }
